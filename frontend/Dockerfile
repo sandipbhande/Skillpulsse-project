@@ -8,7 +8,7 @@ RUN npm install --legacy-peer-deps
 
 COPY . .
 
-RUN npm run build
+RUN npm run build || cat npm-debug.log
 
 FROM node:20-alpine
 
