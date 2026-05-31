@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skillpulse-frontend
+  labels:
+    app: skillpulse
+    component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: skillpulse
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: skillpulse
+        component: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: skillpulse/frontend:latest
+          ports:
+            - containerPort: 4173
+          env:
+            - name: VITE_API_BASE_URL
+              value: http://skillpulse-backend:4000/api

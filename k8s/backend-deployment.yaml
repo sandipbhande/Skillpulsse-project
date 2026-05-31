@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skillpulse-backend
+  labels:
+    app: skillpulse
+    component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: skillpulse
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: skillpulse
+        component: backend
+    spec:
+      containers:
+        - name: backend
+          image: skillpulse/backend:latest
+          ports:
+            - containerPort: 4000
+          env:
+            - name: PORT
+              value: '4000'

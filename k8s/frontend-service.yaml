@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: skillpulse-frontend
+  labels:
+    app: skillpulse
+    component: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: skillpulse
+    component: frontend
+  ports:
+    - port: 80
+      targetPort: 4173
+      protocol: TCP
+      name: http
