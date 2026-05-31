@@ -1,0 +1,64 @@
+name: SkillPulse CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
+jobs:
+
+  sonarqube:
+    name: SonarQube Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  docker:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    needs: sonarqube
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Login DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      # Backend Image
+      - name: Build Backend
+        run: |
+          docker build -t $DOCKER_USERNAME/skillpulse-backend:${{ github.sha }} ./backend
+          docker tag $DOCKER_USERNAME/skillpulse-backend:${{ github.sha }} $DOCKER_USERNAME/skillpulse-backend:latest
+
+      - name: Push Backend
+        run: |
+          docker push $DOCKER_USERNAME/skillpulse-backend:${{ github.sha }}
+          docker push $DOCKER_USERNAME/skillpulse-backend:latest
+
+      # Frontend Image
+      - name: Build Frontend
+        run: |
+          docker build -t $DOCKER_USERNAME/skillpulse-frontend:${{ github.sha }} ./frontend
+          docker tag $DOCKER_USERNAME/skillpulse-frontend:${{ github.sha }} $DOCKER_USERNAME/skillpulse-frontend:latest
+
+      - name: Push Frontend
+        run: |
+          docker push $DOCKER_USERNAME/skillpulse-frontend:${{ github.sha }}
+          docker push $DOCKER_USERNAME/skillpulse-frontend:latest
