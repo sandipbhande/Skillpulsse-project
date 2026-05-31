@@ -5,16 +5,12 @@ on:
     branches:
       - main
 
-env:
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-
 jobs:
   docker:
-    name: Build and Push Docker Images
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Source
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Login to Docker Hub
@@ -25,20 +21,16 @@ jobs:
 
       - name: Build Backend Image
         run: |
-          docker build -t $DOCKER_USERNAME/skillpulse-backend:${{ github.sha }} ./backend
-          docker tag $DOCKER_USERNAME/skillpulse-backend:${{ github.sha }} $DOCKER_USERNAME/skillpulse-backend:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/skillpulse-backend:latest ./backend
 
       - name: Push Backend Image
         run: |
-          docker push $DOCKER_USERNAME/skillpulse-backend:${{ github.sha }}
-          docker push $DOCKER_USERNAME/skillpulse-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/skillpulse-backend:latest
 
       - name: Build Frontend Image
         run: |
-          docker build -t $DOCKER_USERNAME/skillpulse-frontend:${{ github.sha }} ./frontend
-          docker tag $DOCKER_USERNAME/skillpulse-frontend:${{ github.sha }} $DOCKER_USERNAME/skillpulse-frontend:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/skillpulse-frontend:latest ./frontend
 
       - name: Push Frontend Image
         run: |
-          docker push $DOCKER_USERNAME/skillpulse-frontend:${{ github.sha }}
-          docker push $DOCKER_USERNAME/skillpulse-frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/skillpulse-frontend:latest
